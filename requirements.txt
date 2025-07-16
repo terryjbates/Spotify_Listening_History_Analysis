@@ -1,0 +1,43 @@
+# We will describe how to xxtract the packages needed for your Python project. This assumes you 
+# have a notebook and you want to generate the requirements.txt based on its contents.
+#
+## Broad
+# 0. Use the following if you want **everything** installed in your environment, used or not
+# in your environment. 
+#   pip freeze > requirements.txt
+# 
+## Lean
+# 1. Install pipreqs library.
+#   pip install pipreqs
+#
+# 2. Install jupyter metapackage.
+#   conda install nbconvert
+#
+# 3.a. Convert the notebook to a script. Only works for "clean" notebooks, no RAW cells.
+#   mkdir tmp_py  
+#   jupyter nbconvert --to script notebooks\spotify_analysis.ipynb --output-dir tmp_py
+#
+# 3.b. If notebook has RAW cells, search for contents "import" and "from" indicating imports.
+#   findstr /R "^import ^from" tmp_py\Spotify_Streaming_Analysis.py > tmp_py\clean_imports.py
+#   pipreqs tmp_py --force --savepath requirements.txt
+#   rmdir /s /q tmp_py
+#
+# 4. Run pipreqs command.
+#   pipreqs tmp_py --force --savepath requirements.txt
+#
+# 5. Delete the temp directory.
+#   rmdir /s /q tmp_py
+#
+# requirements.txt
+duckdb==1.2.2
+ipython==8.12.3
+matplotlib==3.10.3
+numpy==2.3.1
+pandas==2.3.1
+plotly==6.2.0
+psycopg2==2.9.10
+python-dotenv==1.1.1
+Requests==2.32.4
+seaborn==0.13.2
+SQLAlchemy==2.0.41
+tqdm==4.67.1

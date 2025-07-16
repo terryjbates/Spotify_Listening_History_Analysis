@@ -1,0 +1,27 @@
+Spotify-Listening-History-Analysis/
+│
+├── README.md
+├── requirements.txt
+├── .env.example               # Optional: For sensitive config (e.g., DB creds)
+├── setup/
+│   ├── postgres_setup.sql     # Optional: SQL commands to set up schema
+│   └── schema_diagram.png     # Optional: ERD or schema image
+│
+├── data/
+│   └── raw/                   # Empty, user places exported data here
+│
+├── notebooks/
+│   └── spotify_analysis.ipynb
+│
+├── src/
+│   ├── extract.py             # Extract Spotify data
+│   ├── transform.py           # Clean/prep the data
+│   ├── load.py                # Load into PostgreSQL
+│   └── config.py              # Handles DB creds/env
+│
+├── sql/
+│   ├── queries.sql            # All your reusable SQL logic
+│   └── insights.sql           # Final analysis queries
+│
+└── exports/
+    └── charts/                # Save charts or tables here
