@@ -212,3 +212,6 @@ __marimo__/
 # Ignore iPython checkpoint files.
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+
+# Ignore raw data directory.
+data/raw
