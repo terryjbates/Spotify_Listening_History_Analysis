@@ -50,9 +50,7 @@ CREATE TABLE IF NOT EXISTS public.spotify_data (
     incognito_mode BOOLEAN DEFAULT FALSE,
     time_of_day TEXT,
     season TEXT,
-    year_played INTEGER,
-    CONSTRAINT fk_ip_reference FOREIGN KEY (ip_addr)
-        REFERENCES public.ip_metadata (ip_addr)
+    year_played INTEGER
 );
 
 
@@ -199,10 +197,11 @@ GRANT ALL ON TABLE public.artists TO postgres;
 GRANT ALL ON TABLE public.sd_artists_join TO postgres;
 
 
--- Create role for user. Will fail if user already exists
-CREATE ROLE spotify_postgres_user WITH
-  LOGIN
-  PASSWORD '<db_password>';
+-- Uncomment and modify this section create role for user.
+-- Role creation will fail if this user already exists.
+--  CREATE ROLE spotify_postgres_user WITH
+--  LOGIN
+--  PASSWORD '<db_password>';
 
 
 
@@ -211,6 +210,3 @@ GRANT ALL ON TABLE public.ip_metadata TO spotify_postgres_user;
 GRANT ALL ON TABLE public.spotify_data TO spotify_postgres_user;
 GRANT ALL ON TABLE public.artists TO spotify_postgres_user;
 GRANT ALL ON TABLE public.sd_artists_join TO spotify_postgres_user;
-
--- Example of revoking  unnecessary access
---REVOKE ALL ON TABLE public.ip_metadata FROM spotify_postgres_user;
