@@ -1,29 +1,53 @@
 # Spotify Listening History Analysis
 
-An end-to-end data analysis project using **Python**, **PostgreSQL**, and **JupyterLab** to explore, analyze, and visualize Spotify listening habits. 
-
----
-
-## 🔥 Project Highlights
-
-- 📊 Analyzed genre diversity and listening behavior across time
-- 🧠 Derived insights from metadata (e.g., platform used, time-of-day trends)
-- 🛠️ Built a PostgreSQL-backed data pipeline using Python
-- 🎯 Produced actionable visualizations using `plotly`, `seaborn`, and `pandas`
-- 🧹 Data cleaning  (CLEAN framework)
-
 ---
 
 ## 🗂️ Table of Contents
 
-- [Project Setup](-#project-setup)
-- [Obtain Your Spotify Data](#-obtain-your-spotify-data)
-- [Setup PostgreSQL Database](#setup-postgresql-database)
-- [How to Run Analysis](#-how-to-run-analysis)
-- [Analysis Overview](#-analysis-overview)
-- [Visualizations](#-visualizations)
-- [Key Findings](#-key-findings)
-- [Future Work](#-future-work)
+- [Overview](#-overview)
+- [Analytical Questions](#-analytical-questions)
+- [Executive Summary](#-executive-summary)
+- [Tools](#-tools)
+- [Project Setup](#-project-setup)
+- [Repository Structure](#-repository-structure)
+
+
+---
+
+## Overview
+
+![Listening Time Per Month Plot](./exports/charts/listening_time_per_month.png)
+
+This project explores Spotify listening history over a 10-year period to understand listening trends in streaming consumption, genre diversity, and format; emphasis was placed on answering the "Spotify Wrapped" questions across a wider time period. We also attempt to map the "musical centers of gravity" and locate new genres to recommend music for ourselves via plotting our streaming activity against [Every Noise at Once](https://everynoise.com) data within a 2D genre space.
+
+![Genre Vector Sample Plot](./exports/charts/genre_vector_sample.png)
+---
+
+## Analytical Questions
+
+- When do I listen to the Spotify platform? Does that behavior change with seasons or the time of day?
+- How have my listening behaviors and genre selections evolved over time? Do I have "core genres" or are my tastes more mercurial?
+- What does the data reveal about my musical tastes, daily routines, and genre exploration over time?
+- How can events in my personal and professional life impact listening behavior?
+- Can we utilize external data sources to "profile" where our musical preferences are centered over time?
+
+---
+
+## Executive Summary
+
+- **Ambient, drone, and minimalist genres** consistently and heavily dominate long-term listening. After 2021, lo-fi, vaporwave, and phonk gained larger amounts of hours played.
+- **2020 was the most interesting year**: This year registered the lowest amount of hours played, simultaneously demonstrating the highest amount of genre diversity and podcast listening behavior.
+- **Listening patterns are temporal in nature**: Peaks of streaming activity often occur in the Summer and Spring; peaks are also observed occur in the evening and morning times of day. This suggests streaming is tied to daily routines and that heightened streaming activity may coincide with holidays and vacation periods.
+- **Podcast interest is negligible**, totaling to 21 hours of cumulative streaming activity over the multi-year listening history. 
+
+---
+
+## Tools
+
+- **SQL**: PostgreSQL, SQLAlchemy, pgadmin4, DuckDB, psycopg2, joins, window functions, ranking
+- **Python**: Pandas, numpy, datetime
+- **Data Access and APIs**: requests, json, tqdm
+- **Visualization**: Plotly, Seaborn, Matplotlib
 
 ---
 
@@ -35,95 +59,79 @@ git clone https://github.com/terryjbates/Spotify-Listening-History-Analysis.git
 cd Spotify-Listening-History-Analysis
 ```
 
-### 2. Install Dependencies
-We recommend using some version of a  Python [virtual environment](https://docs.python.org/3/library/venv.html), to more easily manage and control the sets of packages and dependencies for each project.
+### 2. Install Python Dependencies
+We recommend using a Python [virtual environment](https://docs.python.org/3/library/venv.html), to more easily manage and control the sets of packages and dependencies for each project. Within that virtual environment, execute the following command within the virtual environment to install the same modules used in this analysis:
 ```
 pip install -r requirements.txt
 ```
-
-### 3. Environmental Variables
-Create a `.env` file based on the `.env.example` file to store environmental variables. In our case, we also used this to help us safely load PostgreSQL credentials.
+If you are using Anaconda, then you can replicate the virtual environment using this command:
 ```
-DB_HOST=localhost
-DB_NAME=<database_name>
-DB_USER=<database_user_name>
-DB_PASS=<database_user_password>
+conda env create -f environment.yml 
 ```
 
-## 📦 Obtain Your Spotify Data
-This project analyzes the extended streaming history for an account.
+
+### 3. Obtain Spotify Data
+This project analyzes an entire Spotify streaming history for an account and there is a bundled dataset within this repository. If you opt to run analysis against your personal Spotify listening history, please do the following:
 
 1. Authenticate to your Spotify account. 
 2. Go to your [Spotify account privacy settings](https://www.spotify.com/us/account/privacy/).
 3. Deselect undesired options and tick the `Select Extended streaming history` box on the page.
 4. Scroll to the bottom of the page and click `Request data`.
 5. View the Spotify email confirming your history is ready to download and click the "Download" link.
-6. Extract the `.json` files of the history download into of the `data/raw/` subdirectory.
+6. Extract the `.json` files of the history download into of the `data/raw/` subdirectory of the local repository.
 
-## Setup PostgreSQL Database
+###  4. Setup a PostgreSQL Database
 1. Download the [latest PostgreSQL version](https://www.postgresql.org/download/) for your OS environment.
 2. Follow the installation instructions for your OS environment. This project utilized the [Windows OS](https://www.w3schools.com/postgresql/postgresql_install.php) version.
 3. After PostgreSQL installation, we recommend installing [pgAdmin](https://www.w3schools.com/postgresql/postgresql_install.php) GUI program.
 4. Start the PostgreSQL service if necessary.
-5. Create a database to store the listening data. This example uses `spotify_streaming`, but can be named anything.
-```
-CREATE DATABASE spotify_streaming;
-```
-5. Create a database user to access the database. This can be done via GUI within `pgadmin` or can be invoked on terminal using `psql`.
-```
-CREATE USER spotify_postgres_user WITH PASSWORD 'your_password';
-```
-6. Grant the database user access privileges to database.
-```
-GRANT ALL PRIVILEGES ON DATABASE spotify_streaming TO spotify_postgres_user;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO spotify_postgres_user; 
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO spotify_postgres_user;
-```
-7. (Optional) Run setup SQL Script.
-```
-psql -U spotify_postgres_user -d spotify -f setup/postgres_setup.sql
-```
-8. Configure `.env` with database config info.
+5. Create a database to store the listening data. This project uses `spotify_streaming` as the database name.
 
+### 5. Open Notebook
 
-## 🚀 How to Run Analysis
-
-1. Extract data from Spotify JSON
+To view the notebook with the present analysis:
 ```
-python src/extract.py
-```
-2. Transform and clean the data
-```
-python src/transform.py
-```
-3. Load into PostgreSQL
-```
-python src/load.py
-```
-4. Open the analysis notebook
-```
-jupyter lab notebooks/spotify_analysis.ipynb
+quarto preview notebooks/spotify_analysis.ipynb
 ```
 
-## 🔍 Analysis Overview
-The notebook covers:
-* Total and unique genres discovered by year
-* Listening patterns by hour, weekday, and platform
-* Repeat artist behavior and platform stickiness
-* First-time genre discoveries by year
+Or open  `notebooks/spotify_analysis.ipynb` directly using [JupyterLab](https://jupyterlab.readthedocs.io/en/latest/).
 
-## 📈 Visualizations
-* Scatter plots of genre discovery
-* Time series of listening frequency
-* Bar plots of top artists per year
-* Correlation plots between metadata dimensions
+---
 
-## 💡 Key Findings
-* I have a ever-tightening series of genres 2017–2020.
-* My listening patterns shifted post-2021.
-* Most listening times during summer months.
+## Repository Structure
+```
+Spotify-Listening-History-Analysis/
+│
+├── README.md
+├── requirements.txt           # Packages to  recreate Python virtual environment
+├── .env.example               # Storage of sensitive config and env vars (e.g., DB creds)
+├── .gitignore                 # .gitignore configured with repo-specific settings
+├── environment.yml            # Anaconda environment file
+├── LICENSE                    # MIT License file 
+|
+├── data/
+│   ├── raw/                            # Place Spotify JSON data files here
+│   └── extract/
+|       ├── podcast_categories.csv      # Manually curated podcast categories
+|       └── spotify_data.csv            # Bundled Spotify dataset
+|
+├── exports/
+│   ├── charts/                            
+|   |   ├── genre_vector_sample.png           # Genre vector average sample image
+|   |   └── listening_time_per_month.png      # Hours played per month plot
+|   |
+│   └── images/                            
+|       └── ENAO_screenshot.png            # Screenshot of Every Noise at Once website genre space
 
-## 🔮 Future Work
-* Connect to Spotify API to get track/genre metadata dynamically
-* Add cluster analysis of genre affinity
-* Publish to Quarto or Streamlit for web sharing
+|
+├── notebooks/
+│   └── spotify_analysis.ipynb    # Notebook with data analysis 
+|
+├── setup/
+│   ├── postgres_setup.sql        # SQL commands to set up schema
+│   └── schema_diagram.png        # ERD image 
+│
+├── sql/
+    └── queries.sql               # Reusable SQL logic for augmentation and cleaning
+```
+---
