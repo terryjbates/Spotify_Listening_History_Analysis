@@ -1,3 +1,43 @@
+------------------------
+-- Data Import Queries
+------------------------
+
+COPY spotify_data (
+        id 
+        ,timestamp_column
+        ,ms_played
+        ,conn_country
+        ,track_name
+        ,artist_name
+        ,album_name
+        ,spotify_track_uri
+        ,episode_name
+        ,episode_show_name
+        ,spotify_episode_uri
+        ,audiobook_title
+        ,audiobook_uri
+        ,audiobook_chapter_uri
+        ,audiobook_chapter_title
+        ,reason_start
+        ,reason_end
+        ,shuffle
+        ,skipped
+        ,offline
+        ,offline_timestamp
+        ,incognito_mode
+        ,time_of_day
+        ,season
+        ,year_played
+)
+-- Uncomment and insert correct path below
+-- FROM 'C:\Users\<gh_repo_dir>\Spotify_Listening_History_Analysis\data\extract\spotify_data.csv'
+WITH(FORMAT CSV, HEADER);
+
+
+------------------------
+-- Data Insertion and Update Queries
+------------------------
+
 -- Insert artists data into `artists` table.
 WITH distinct_artists (artist_name) AS (
 	SELECT DISTINCT artist_name 
@@ -56,6 +96,7 @@ SET year_played = EXTRACT(YEAR FROM timestamp_column)::INTEGER;
 -- We share details here for illustrative purposes.
 -- ALTER TABLE spotify_data
 -- ADD COLUMN time_of_day TEXT;
+
 
 -- Add time of day label to our tracks
 UPDATE spotify_data
@@ -204,6 +245,7 @@ CREATE TABLE temp_genre_track_avg_playtime AS (
 		stream_year
 		,avg_mins_played DESC
 )
+
 
 ------------------------
 -- Data Cleaning Queries
