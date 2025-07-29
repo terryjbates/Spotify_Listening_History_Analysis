@@ -36,16 +36,16 @@ This analysis quantifies patterns such as the most-played artists and tracks per
 
 Across our entire Spotify listening data, several meaningful patterns emerge:
 
-* Most years of the entire Spotify listening dataset are characterized by consistent, high-volume engagement with a "core" set of genres. These genres include `ambient`, `minimalism`, `drone` and `space music`.  The listening behavior surrounding tracks within these genres is associated with aligned with evening and morning hours.  
+* Most years of the entire Spotify listening dataset are characterized by consistent, high-volume engagement with a "core" set of genres. These genres include `ambient`, `minimalism`, `drone` and `space music`.  The listening behavior surrounding tracks within these genres is associated with  evening and morning hours.  
 
-* **2020** stood out as a dramatic exception, with the most significant drop in overall listening hours combined with an unusually diverse array of genres and formats. Podcast listening, in spite of an overarching aversion to the format at large, rose to it highest level in this year, reflecting the social disruption and psychological impacts of pandemic-era lockdowns and work-from-home initiatives.
+* **2020** stood out as a dramatic exception, with the most significant drop in overall listening hours combined with an unusually diverse array of genres and formats. Podcast listening, in spite of an overarching aversion to the format at large, rose to its highest level in this year, reflecting the social disruption and psychological impacts of pandemic-era lockdowns and work-from-home initiatives.
 
 * After **2020**, listening hours rose back to prior levels, in conjunction with several newly observed genres, significantly adding to diversity and overall hours played. `Lo-fi`, `phonk`, `vaporwave`, and `synthwave`, bit-part players at the beginning of the listening history, took up more listening volume alongside the "core" genres. This signals both a reversion to familiar tastes, coupled with emergent interest and openness to new genres and artists.
 
 * Genre choices and hours played fluctuate not just by year, but across time of day and month.
 
-    * With the exception of **2020**, morning consistently sees the most engagement, with afternoons and evenings battling for second spot.
-    * Summer and Spring feature greater listening intensity than other seasons generally, though Fall has grown more dominant in latter years. Winter months show consistent dips in activity, with ana outlier year associated with a "crunch-time" project.
+    * With the exception of **2020**, Morning consistently sees the most engagement, with afternoons and evenings battling for second spot.
+    * Summer and Spring feature greater listening intensity than other seasons generally, though Fall has grown more dominant in latter years. Winter months show consistent dips in activity, with an outlier year associated with a "crunch-time" project.
 
 ## 📦 Library Imports
 
@@ -136,7 +136,7 @@ db_port = os.getenv("DB_PORT")
 # Set env variable to 'None' value. O
 # DATA_PATH = None
 
-# Manualy set dir if things go awry
+# Manually set dir if things go awry
 os.chdir('C:\\Users\\lover\\Documents\\GitHub\\Spotify_Listening_History_Analysis')
 
 # Use explicit DATA_PATH, otherwise use relative dir to infer location
@@ -959,7 +959,7 @@ In this section, we will discuss two methods to load Spotify listening history d
 
 ### Import Bundled CSV 
 
-Execute the following code to generate the query needed load the Spotify listening history located within the `<local_github_repo_dir>/data/extract` directory.  
+Execute the following code to generate the query needed to load the Spotify listening history located within the `<local_github_repo_dir>/data/extract` directory.  
 
 **Query**
 
@@ -1320,7 +1320,7 @@ If our code becomes disconnected or the processing is halted by API quota limit,
 
 #### ⚠️ Use Caution Surfacing the Spotify Web API
 
-Programmatically acquiring genre data via API can be extremely time-consuming and rife with failure. For this project, we sought the _entirety_ of our listening history. If you attempt to mimic this project, we suggest limiting the scope to several hundred records at a a time, requiring the ingestion of JSON files encompassing smaller time periods. Another suggestion, if problems are encountered at this stage, is to use the `retry_with_backoff` function with smaller starting and ending `id` values.
+Programmatically acquiring genre data via API can be extremely time-consuming and rife with failure. For this project, we sought the _entirety_ of our listening history. If you attempt to mimic this project, we suggest limiting the scope to several hundred records at a time, requiring the ingestion of JSON files encompassing smaller time periods. Another suggestion, if problems are encountered at this stage, is to use the `retry_with_backoff` function with smaller starting and ending `id` values.
 
 ## 🔬 Post-Ingestion Overview
 
@@ -1334,7 +1334,7 @@ After sourcing Spotify data, we initiate data cleaning and validation  processes
 
 ### 📏 Measures
 
-* **ms_played**: Actual playback time in milliseconds. This is not necessarily equivalent to full length of a Spotify track.
+* **ms_played**: Actual playback time in milliseconds. This is not necessarily equivalent to the full length of a Spotify track.
 
 ### 📐 Dimensions
 
@@ -1421,7 +1421,7 @@ No records with empty strings were found.
 
 We make no assumptions about the cleanliness of our Spotify listening data.
 
-We define a "duplicate" as a record sharing same track name, same artist, same `spotify_track_uri`, IP address, and timestamp with another record. 
+We define a "duplicate" as a record sharing the same track name, same artist, same `spotify_track_uri`, IP address, and timestamp with another record. 
 
 First, we count the number of all duplicates using a subquery and output the count of duplicate records present. We use `HAVING` to filter the results of `GROUP BY` after aggregation has been applied; in this case, that is done via the `COUNT` function.
 
@@ -2160,9 +2160,9 @@ pd.set_option('display.max_columns', None)
 top_genre_pivot
 ```
 
-Minimal activity is seen in **2015** and a small amount of genres are present then.
+Minimal activity is seen in **2015** and a small number of genres are present then.
 
-From **2017** through **2019** there were large amounts of genre diversity. The history communicates interest in `art rock`, `ambient`, `drone`, `lo-fi beats`, and `alternative r&b`. These years feel experimentala and exploratory.
+From **2017** through **2019** there were large amounts of genre diversity. The history communicates interest in `art rock`, `ambient`, `drone`, `lo-fi beats`, and `alternative r&b`. These years feel experimental and exploratory.
 
 The years of **2020** through **2025** shows a shift to more stable listening habits. "Lo-Fi" family genres dominate, such as `lo-fi beats`, `lo-fi hip hop`, and the mall-like resonance of `vaporwave.` Previous genres like `drone` and `ambient` still have presence, implying I have a preference for atmospheric, introspective music.
 
@@ -3424,7 +3424,7 @@ What is bothering me is that I have no _emotional_ resonance with the data. It i
 
 As mentioned before, "Top Tracks" will be defined as tracks having the highest ranking based on play count within each year. We have a query providing these top tracks, but we need to use a for-loop like structure to search the `spotify_data` table, find instances of the track, then find the track with the oldest date. We create a temp table by using the same basic query, wrapping it inside of a `CREATE TABLE AS(..)` statement and altering the ranking filter for values of `1`. (This query can also be found inside of the `sql/queries.sql` file.)
 
-⚠️ Temporary tables are owned by the `postgres` user, so these will need to be created and then _granted_ to the database user used in this notebook. Create these table manually with `pgadmin4` or `psql` command prompt to then enable necessary permissions.
+⚠️ Temporary tables are owned by the `postgres` user, so these will need to be created and then _granted_ to the database user used in this notebook. Create these tables manually with `pgadmin4` or `psql` command prompt to then enable necessary permissions.
 
 ```{python}
 #| lang: sql
@@ -3611,7 +3611,7 @@ top_10_tracks_played_first_played['average_plays_per_day'] = \
 top_10_tracks_played_first_played.head()
 ```
 
-The years of **2014** and **2015** lack enough data to merit deep consideration. **2017** and my Brian Eno phase seems interesting, with me listening to this track every ~**3.84** days. This feels like a weekend habit, especially given the **275** day spread. The peculiar nature of the `Chill Bees` track makes me wonder about the nature of the playist and its frequency. If played during sleeping hours, and more than twice a day on average, I suspect that I must have been using the _exact_ same home automation command to trigger the _exact_ same playlist. There also must be a directive to repeat the playlist, cycling through the same set of songs to enable this track to play multiple times in a single session. There may also be some peculiarity to the playlist composition. The track listing for the `Chill Bees` track may need to be short enough to enable the same songs to replay more than once in a session. Another possibility is that the track length may impact how quickly the songs are cycled. We could foresee a situation where there are minimal songs that play for longer periods before cycling back to the beginning, or a smaller number of tracks that have shorter play times to enable the full rotation of the entries. 
+The years of **2014** and **2015** lack enough data to merit deep consideration. **2017** and my Brian Eno phase seems interesting, with me listening to this track every ~**3.84** days. This feels like a weekend habit, especially given the **275** day spread. The peculiar nature of the `Chill Bees` track makes me wonder about the nature of the playlist and its frequency. If played during sleeping hours, and more than twice a day on average, I suspect that I must have been using the _exact_ same home automation command to trigger the _exact_ same playlist. There also must be a directive to repeat the playlist, cycling through the same set of songs to enable this track to play multiple times in a single session. There may also be some peculiarity to the playlist composition. The track listing for the `Chill Bees` track may need to be short enough to enable the same songs to replay more than once in a session. Another possibility is that the track length may impact how quickly the songs are cycled. We could foresee a situation where there are minimal songs that play for longer periods before cycling back to the beginning, or a smaller number of tracks that have shorter play times to enable the full rotation of the entries. 
 
 For the sleeps sounds era denoted in **2018** - **2023**, if these songs were the most played for that year and their initial play times were in the `evening` or `morning`  this could clearly signal to Spotify that I am a nocturnal person, or that I use these songs as background music instead of intentional play. 
 
@@ -4425,7 +4425,7 @@ hours_played_per_day_df = fetch_query_results(query)
 hours_played_per_day_df.head()
 ```
 
-To ensure smooth time series plot and avoids breaks in the visualizations, we must ensure our Spotify listening history has a row for every single day, even if no music was played. 
+To ensure a smoothtime series plot and avoid breaks in the visualizations, we must ensure our Spotify listening history has a row for every single day, even if no music was played. 
 
 - We extract the `year` and `month` to help group and analyze data later.
 - We generate a **complete date range** from the earliest to latest listening date.
@@ -4664,7 +4664,7 @@ Comparisons between different times of day are not exactly "fair," given the tim
 
 If I sleep less and later than most people conventionally, this will limit potential Spotify usage. If the genres in play at that phase of day are atmospheric/sleep-sounds, they tend to have longer play times, reducing track count while extending play times. One of my employers had a "core hours" practice where in-office attendance usually meant you arrived by 10:00 AM, to adjust for Bay Area traffic and commuting travel times. This would enable ample time for any music I would normally play to occupy the `morning` zone. 
 
-`Afternoon` may have high contributions due to less meetings than `morning`, Spotify would acting coding session productivity booster, enabling focus and background noise to drown out office distractions. I admit to expecting larger amounts of `evening` time, assuming there would be more time and freedom to play music after work. This time period may have been taken up exercise, cooking, other outside activities, reducing use of the Spotify platform.
+`Afternoon` may have high contributions due to less meetings than `morning`, Spotify would act as a coding session productivity booster, enabling focus and background noise to drown out office distractions. I admit to expecting larger amounts of `evening` time, assuming there would be more time and freedom to play music after work. This time period may have been taken up by exercise, cooking, other outside activities, reducing use of the Spotify platform.
 
 Inspecting **2020** afternoons in greater detail, I was curious as to _what_ exactly I was playing during those periods. I ran a filtered version of the "Top Genres of the Year" query to get a list of genres, then ran the following query to get a list of artists in that year.
 
@@ -4927,7 +4927,7 @@ fig.show()
 * The `afro house` genre had a significant share of hours played in March. Afterwards, this genre does not have a prominent share in any subsequent month.
 * With COVID-19 emergency lockdown and workplace restrictions taking place towards the end of march, the dropoff in hours played in April and May coincide. This is counterintuitive, since one would expert that more time at home, away from the office would mean more listening time. In this case, the disruption of routine explains the plummet in listening time. As detailed in the "Time of Day" section, we see a notable drop in morning time listening behavior as well as less listening volume on a yearly scale.
 * June, July, and August aligned with my personal preconception of summer months being more "free," lending themselves to higher listening volume. The winter months pale in comparison with playing time, in spite of there being more reasons to be indoors, where listening may occur, versus outside and enjoying summer air.
-* The "Francophone" nature of my listening habits fluctuates in this year. `Pop urbaine`, `french rap`, `french r&b` appear in winter months mostly, and in the months immediately after lockdown, before theummer listening explosion. While these genres are still present in summer, their contribution to listening time is overwhelmed by other genres. 
+* The "Francophone" nature of my listening habits fluctuates this year. `Pop urbaine`, `french rap`, `french r&b` appear in winter months mostly, and in the months immediately after lockdown, before the summer listening explosion. While these genres are still present in summer, their contribution to listening time is overwhelmed by other genres. 
 * Qualitatively, "feel" of the genres seems to match the season.`Afropop`, `afrobeats` being danceable, feeling light and free; uplifting music to counter the stresses of the year. The "Francophone" sounds dominate the winter months, more bleak, and sinister; [Sartre](https://en.wikipedia.org/wiki/Nausea_(novel)) and cigarettes.
 
 #### What happened in 2017?
@@ -5040,7 +5040,7 @@ fig.show()
 * May, June and July profile very similarly in genre composition, `ambient`, `space music`, `minimalism`, `drone` as the usual suspects.
 *  June and July are twin towers for this year in terms of sheer hours played. The dropoff in hours played in August almost seems like I was attending college. Both months were defined by _intense_ amounts of Brian Eno and [Steve Reich](https://open.spotify.com/artist/1aVONoJ0EM97BB26etc1vo?si=MzkjB71wSZGsbPvd1mo-GQ) tracks, [Harmonia](https://open.spotify.com/artist/0tHDVpPzMs1JqKTAuGQkQR?si=SmStAaurSLewD26oQa-CPw) usually following behind in hours played. Steve Reich's presence reminded me how often I would use [Music for Musicians](https://open.spotify.com/album/370lBw4JOlF1CeDRKPqfFh?si=RcHO7A39SS-6AfGlHVXbzg) to just focus on work tasks.
 * August, I suspect I got plain sick and tired of hearing the same things over and over again, and tired of listening to artists like Brian Eno to such a magnitude, and weary of listening to Spotify heavily.
-* Kilo Kish was "the" `alternative r&b` artist of choice in this year, with her songs being played most heavily in April, August, and September. Her lowest playtime, as not too much of a surprise, occured in July, with the peaks of hours played falling on either side of summer months.
+* Kilo Kish was "the" `alternative r&b` artist of choice in this year, with her songs being played most heavily in April, August, and September. Her lowest playtime, as not too much of a surprise, occurred in July, with the peaks of hours played falling on either side of summer months.
 
 ### ❄️ Seasons 🍁
 
@@ -5211,7 +5211,7 @@ Summer is the season with the highest track count in five years out of the ten f
 I was curious  _when_ I first played a genre during my listening history. It may not be the first time I have heard the song in life, but just when I played it on Spotify. We focus our attention on the top 10 genres instead of applying this across the board.
 
 ```{python}
-# Find when a genre first appeared in top 10.
+# Find when a genre first appeared in the top 10.
 genre_first_appearance = top_genres_per_year_df.groupby('genre')['stream_year'].min().sort_values()
 
 # Find recent genres
@@ -5274,7 +5274,7 @@ top_genres_per_year_df.query('hours_played >=89.045729')
 </details>
 :::
 
-The data here indicating extreme playtime for `ambient`, `drone` and `minimalism`, reflecting utilization of Spotify as a "tool." A tool to provide a productivity boon, for working relaxation, or a tool to help me fall asleep more easily. There is nothing about this that seems danceable, melodic, or strongly emotionally evocative at the top of the pile. Less is more, and I wanted to do more, with Spotify in the background.
+The data here indicates extreme playtime for `ambient`, `drone` and `minimalism`, reflecting utilization of Spotify as a "tool." A tool to provide a productivity boon, for working relaxation, or a tool to help me fall asleep more easily. There is nothing about this that seems danceable, melodic, or strongly emotionally evocative at the top of the pile. Less is more, and I wanted to do more, with Spotify in the background.
 
 ## 🥣 Where Are My Tastes Centered?
 
@@ -5293,6 +5293,8 @@ enao_image_path = os.getcwd() + "\\exports\\images\\ENAO_screenshot.png"
 display(Image(filename=enao_image_path, width=600, height=600))
 ```
 
+_Credit: [Every Noise at Once](https://everynoise.com)_
+
 ### Visual Explainer
 
 To illustrate our idea of a genre vector weighted by listening time, consider the following:
@@ -5301,7 +5303,7 @@ To illustrate our idea of a genre vector weighted by listening time, consider th
 
 - Listen to an artist, we associate the observed listening time with _all_ genres that artist is tagged with.
 
-- To capture the center of musical gravity in a given year, we calculate the weighted average of genre coordinates, with the "weight" is how much time you spent listening.
+- To capture the center of musical gravity in a given year, we calculate the weighted average of genre coordinates, with the "weight" being how much time you spent listening.
 
 This diagram below shows how that works on a sample dataset of five genres, with the red star the resulting center computed:
 
@@ -5389,13 +5391,13 @@ fig.show()
 
 ### Caveats
 
-* Defining "genre points" in a coordinate system appropriated for the purpose of finding similarity, is "fuzzy" by nature. We have seen our listening activity shift from minimal, to non-existent, to explosive in volume. If the listening history is defined unpredictable behavior, subject to rapid changes, and possessing intense fixations on specific artists or genres, the information obtain from analyzing the "musical centers" may not communicate anything conclusive or meaningful.
+* Defining "genre points" in a coordinate system appropriated for the purpose of finding similarity, is "fuzzy" by nature. We have seen our listening activity shift from minimal, to non-existent, to explosive in volume. If the listening history is defined by unpredictable behavior, subject to rapid changes, and possessing intense fixations on specific artists or genres, the information obtained from analyzing the "musical centers" may not communicate anything conclusive or meaningful.
 * We lack familiarity with the methodology underlying [ENAO](https://everynoise.com/), so the mechanisms and relationships of this musical genre-space are nebulous. For our purposes, we treat the coordinate system as an accurate representation of genre similarity. Genres with smaller distances between them in the coordinate system sharing characteristics, genres further apart in the coordinate system sharing less characteristics, however those aspects are calculated and measured internally.
 * The Spotify design decision to associate genres with artists, affects the implied semantics governing vector calculations. Recall that `space music` was a mysterious genre, but derived from a familiar artist in heavy rotation within the listening history. Our vector calculations may be pulled across the genre-space in mysterious ways due to broad genre associations artists may possess.
 
 ### Implementation
 
-We must first obtain data related to the [ENAO](https://everynoise.com/) genre coordinates. There was no CSV on their website that containing this information but there GitHub gist rendered this data accessible.
+We must first obtain data related to the [ENAO](https://everynoise.com/) genre coordinates. There was no CSV on their website that contained this information but a GitHub gist rendered this data accessible.
 
 ```{python}
 # Read the EveryNoise Data from GitHub into a dataframe
@@ -5618,6 +5620,10 @@ surrounding_genres = get_surrounding_genres(valid_df, center_row["x_center"], ce
 surrounding_genres.query('distance <200').head()
 ```
 
+### Recommended Genres by Proximity
+
+Seeing how close the musical "centers of gravity" are to other genres provides avenues of future genre exploration, providing fodder for future song and artist recommendations.
+
 To explore genres residing near our computed musical centers, we iterate over the range of years in our listening history.
 
 ```{python}
@@ -5636,7 +5642,38 @@ for year in range(2013,2026):
         logging.info(f"Unable to process year: {year}")
 ```
 
-Seeing how close the musical "centers of gravity" are to other genres provides avenues of future genre exploration, provding fodder for future song and artist recommendations.
+We collect the three most-recent years and list out the genres near to our musical centers of gravity. Surprising results, as these seem to contrast with my musical self-image at times. Still, exciting to see there may be aspects to these novels genres I may find appealing.  
+
+* **2022**
+    * glam rock
+    * soft rock
+    * indie rock
+    * yacht rock
+    * philly soul
+    * bedroom pop
+    * jangle pop
+    * riot grrrl
+    * v-pop
+* **2023**
+    * art pop
+    * opm
+    * celtic rock
+    * space rock
+    * v-pop
+    * lo-fi
+    * rock
+    * indie r&b
+    * stoner rock
+* **2024**
+    * chinese r&b
+    * taiwanese indie
+    * sholawat
+    * taiwanese pop
+    * mandopop
+    * gospel r&b
+    * grupera
+    * pinoy indie
+    * retro soul 
 
 ## 🆚Comparing Centers vs. Top Genres
 
@@ -5644,7 +5681,7 @@ Seeing how close the musical "centers of gravity" are to other genres provides a
 
 As we have already analyzed our top genres by playtime, we can understand how closely top genres reflect the musical centers of gravity computed earlier.
 
-The proximity of top genres to our musicala centers can be interpreted different ways:
+The proximity of top genres to our musical centers can be interpreted different ways:
 
 | Scenario                                            | What It Tells Us                                                                               |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -5834,6 +5871,7 @@ fig.show()
 ```
 
 ```{python}
+#| scrolled: true
 # Clean column names
 genre_coords.columns = [col.strip() for col in genre_coords.columns]
 weighted_centers.columns = [col.strip() for col in weighted_centers.columns]
@@ -5939,7 +5977,7 @@ We visualized each year's listening center mapped onto the genre coordinate syst
 #### 2017–2018
 - **Top Genres**: *ambient*, *drone*, *minimalism*
 - **Closest Genres**: *acoustic pop*, *math rock*, *kayokyoku*
-- **Interpretation**: These years were the [Brian Eno](https://open.spotify.com/artist/7MSUfLeTdDEoZiJPDSBXgi?si=Hk8x3dnbTOe6ZOCLf3_4VA)/[Steve Reich](https://open.spotify.com/artist/1aVONoJ0EM97BB26etc1vo?si=-5rOKMNnRKqGRDE5GYq3xw) era. These years had strong thematic coherence, with the centers deeply embedded in the regions where the top genres also lay. Tracks of this ilk could bleedinto some form of `acoustic pop` but the proximity to `math rock` is curious; We associate `rock*` genres with aggression and higher BPM, more vocalized, and less atmospheric. It could be the case of a more dispersed set of genres, or a nascent relation to the `lo-fi` genre one would associate with more melodic rock. The `kayokyoku` is of intense personal interest, sharing attributes with the favorite `city pop` genre, but this genre refers to pop in the early 20th century. 
+- **Interpretation**: These years were the [Brian Eno](https://open.spotify.com/artist/7MSUfLeTdDEoZiJPDSBXgi?si=Hk8x3dnbTOe6ZOCLf3_4VA)/[Steve Reich](https://open.spotify.com/artist/1aVONoJ0EM97BB26etc1vo?si=-5rOKMNnRKqGRDE5GYq3xw) era. These years had strong thematic coherence, with the centers deeply embedded in the regions where the top genres also lay. Tracks of this ilk could bleed into some form of `acoustic pop` but the proximity to `math rock` is curious; We associate `rock*` genres with aggression and higher BPM, more vocalized, and less atmospheric. It could be the case of a more dispersed set of genres, or a nascent relation to the `lo-fi` genre one would associate with more melodic rock. The `kayokyoku` is of intense personal interest, sharing attributes with the favorite `city pop` genre, but this genre refers to pop in the early 20th century. 
 
 ---
 
@@ -5974,10 +6012,8 @@ We visualized each year's listening center mapped onto the genre coordinate syst
 ### Summary
 
 - Listening centers clustered tightly in **2017**–**2019** and again in **2021**–**2023**, showing strong stylistic consolidation. After collapsing on a set of genres, those choices remain for extended periods of time.
-- **2020** was an outlier year, the listening center suggesting active searching for new music genres outside of prior experiences. There was less hours played and more variety than previously seen. The genres were extremely "danceable," like `afrobeat` and `afroswing`. 
-- Recent years (**2024**–**2025**) show consistency with some mild expansion. This may indicate platform recommendations or ambient discovery of new artists and geners stumbling upon new sounds. Despite exploration, atmospheric genres remain "foundational" to our listening behavior.
-
-## 📜 Key Takeaways
+- **2020** was an outlier year, the listening center suggesting active searching for new music genres outside of prior experiences. There were less hours played and more variety than previously seen. The genres were extremely "danceable," like `afrobeat` and `afroswing`. 
+- Recent years (**2024**–**2025**) show consistency with some mild expansion. This may indicate platform recommendations or ambient discovery of new artists and genres stumbling upon new sounds. Despite exploration, atmospheric genres remain "foundational" to our listening behavior.
 
 ## 📝 Appendix
 
@@ -6000,5 +6036,5 @@ We visualized each year's listening center mapped onto the genre coordinate syst
 
 ### IP Address and Platform Data
 
-The Spotify listening history contain extensive and detailed data on the platform and IP address that streaming activity takes place on. While this provides interesting exploratory data analysis possibilities, we suggest you do _not_ do conduct or share any such public-facing research or analysis exposing this information. Networking data will allow malicious actors to map and exploit private home networks, profile how users navigate internet and VPN providers, obtain information on work and personal activities, and gather awareness of home and workplace devices. 
+The Spotify listening history contains extensive and detailed data on the platform and IP address that streaming activity takes place on. While this provides interesting exploratory data analysis possibilities, we suggest you do _not_ do conduct or share any such public-facing research or analysis exposing this information. Networking data will allow malicious actors to map and exploit private home networks, profile how users navigate internet and VPN providers, obtain information on work and personal activities, and gather awareness of home and workplace devices. 
 
