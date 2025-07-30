@@ -118,8 +118,9 @@ Spotify-Listening-History-Analysis/
 ├── exports/
 │   ├── charts/                            
 |   |   ├── genre_vector_sample.png           # Genre vector average sample image
-|   |   └── listening_time_per_month.png      # Hours played per month plot
-|   |
+|   |   ├── listening_time_per_month.png      # Hours played per month plot
+|   |   └── track_count_time_of_day.png       # Clutered column of time of day and tracks played
+|   | 
 │   └── images/                            
 |       └── ENAO_screenshot.png            # Screenshot of Every Noise at Once website genre space
 
