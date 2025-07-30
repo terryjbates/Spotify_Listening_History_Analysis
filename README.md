@@ -91,7 +91,7 @@ This project analyzes an entire Spotify streaming history for an account and the
 
 To view the notebook with the present analysis:
 ```
-quarto preview notebooks/spotify_analysis.ipynb
+quarto render notebooks/spotify_analysis.qmd
 ```
 
 Or open  `notebooks/spotify_analysis.ipynb` directly using [JupyterLab](https://jupyterlab.readthedocs.io/en/latest/).
