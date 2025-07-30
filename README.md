@@ -44,7 +44,7 @@ This project explores Spotify listening history over a 10-year period to underst
 
 ## Tools
 
-- **SQL**: PostgreSQL, SQLAlchemy, pgadmin4, DuckDB, psycopg2, joins, window functions, ranking
+- **SQL**: PostgreSQL, SQLAlchemy, pgadmin4, psycopg2, joins, window functions, ranking
 - **Python**: Pandas, numpy, datetime
 - **Data Access and APIs**: requests, json, tqdm
 - **Visualization**: Plotly, Seaborn, Matplotlib
