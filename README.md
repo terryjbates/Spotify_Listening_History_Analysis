@@ -15,10 +15,16 @@
 ---
 
 ## Overview
+![Power BI Splash Page](./exports/images/PowerBI_Splash_screenshot.png)
+This project explores Spotify listening history over a 10-year period to understand listening trends in streaming consumption, genre diversity, and format; emphasis was placed on answering the "Spotify Wrapped" questions across a wider time period. 
+
+![Power BI Obfuscated Map](./exports/images/PowerBI_Obfuscated_Map.png)
 
 ![Listening Time Per Month Plot](./exports/charts/listening_time_per_month.png)
 
-This project explores Spotify listening history over a 10-year period to understand listening trends in streaming consumption, genre diversity, and format; emphasis was placed on answering the "Spotify Wrapped" questions across a wider time period. We also attempt to map the "musical centers of gravity" and locate new genres to recommend music for ourselves via plotting our streaming activity against [Every Noise at Once](https://everynoise.com) data within a 2D genre space.
+![Power BI Genre Dive](./exports/images/PowerBI_Genre_Page.png)
+
+We also attempt to map the "musical centers of gravity" and locate new genres to recommend music for ourselves via plotting our streaming activity against [Every Noise at Once](https://everynoise.com) data within a 2D genre space.
 
 ![Genre Vector Sample Plot](./exports/charts/genre_vector_sample.png)
 ---
