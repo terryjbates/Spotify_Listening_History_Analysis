@@ -6034,7 +6034,227 @@ We visualized each year's listening center mapped onto the genre coordinate syst
 
 * Query objects are random-access, even though the expectations is that the order of records
 
-### IP Address and Platform Data
+### ⚠️ IP Address and Platform Data
 
-The Spotify listening history contains extensive and detailed data on the platform and IP address that streaming activity takes place on. While this provides interesting exploratory data analysis possibilities, we suggest you do _not_ do conduct or share any such public-facing research or analysis exposing this information. Networking data will allow malicious actors to map and exploit private home networks, profile how users navigate internet and VPN providers, obtain information on work and personal activities, and gather awareness of home and workplace devices. 
+**EXERCISE CAUTION!**
+
+The Spotify listening history contains _extensive_ and _extremely detailed_ data on the platform and IP address that streaming activity takes place on. While this provides interesting exploratory data analysis possibilities, we suggest you do _not_ do conduct or share any such public-facing research or analysis exposing this information. Networking data will allow malicious actors to map and exploit private home networks, profile how users navigate internet and VPN providers, obtain information on work and personal activities, and gather surveillance awareness of home and workplace devices.
+
+#### Add IP Metadata Table
+
+Use the following query to create the `ip_metadata` table, if you manually created your database schema. This query can be viewed inside the  `setup/postgresql.sql` file as well.
+
+```{python}
+#| lang: sql
+CREATE TABLE IF NOT EXISTS public.ip_metadata (
+    ip_addr VARCHAR(45) PRIMARY KEY,
+    status VARCHAR(10) NOT NULL,
+    continent_code VARCHAR(5),
+    country_code CHAR(2),
+    region_name VARCHAR(100),
+    city VARCHAR(100),
+    zip VARCHAR(20),
+    lat DOUBLE PRECISION,
+    lon DOUBLE PRECISION,
+    timezone VARCHAR(50),
+    isp VARCHAR(150),
+    org VARCHAR(150),
+    asn VARCHAR(50),
+    asname VARCHAR(150),
+    mobile BOOLEAN,
+    proxy BOOLEAN,
+    hosting BOOLEAN
+);
+
+-- Added indexes for common queries
+CREATE INDEX IF NOT EXISTS idx_ip_metadata_country_code ON ip_metadata(country_code);
+CREATE INDEX IF NOT EXISTS idx_ip_metadata_city ON ip_metadata(city);
+CREATE INDEX IF NOT EXISTS idx_ip_metadata_isp ON ip_metadata(isp);
+CREATE INDEX IF NOT EXISTS idx_ip_metadata_asn ON ip_metadata(asn);
+```
+
+#### IP-API.com Processing
+
+We utilizied [IP-API.com](https://ip-api.com/) to process each IP address and obtain reverse lookup information. Thankfully, the API enables batch processing of IP addresses. We can post up to 100 IP addresses in each request and receive response data with various metadata; this can include the country, city, latitude, longitude, mobile network status, and so on for any IP we have used to listen to Spotify. This is a much richer set of info we can use to understand our listening behavior. 
+
+The plan to process these IP addresses is as follows:
+* Split the unique list of all IP addresses we have listened to Spotify into batches of 100.
+* Create a `POST` request for each batch of 100, preprocessing the data for the payload.
+* Send the query to the [IP-API.com](ip-api.com) batch endpoint.
+* Take the response data and append to a list of dictionaries.
+* Repeat the API process until IPs have been looked up.
+* Create a final dictionary using IP addresses as keys, and the reverse lookup data as values.
+
+```{python}
+# Convenience function to help us split a list into chunks
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+```
+
+```{python}
+# Import pprint
+import pprint
+
+# Create list of IP address batches
+list_of_batches = []
+
+# Obtain unique IP addresses.
+unique_ip_addresses = ip_platform_df['ip_addr'].unique()
+```
+
+[IP-API.com](https://ip-api.com) enables ease-of-use for their API via enabling the use of a single query parameter that will enable the selection of specific fields _without_ having to spell out every single item you want to extract from their API. This shortand is detailed in their documentation, but carefully read the code snippet below to get a clearer picture.
+
+```{python}
+# Set up variables to store the API reverse lookup results
+reverse_lookup_list = [] # Store reverse lookup host info
+post_payload = str()
+
+
+# Set API endpoint. The `fields` query param is API endpoint shorthand to 
+# select specific fields returned in the response. See https://ip-api.com/docs/api:batch
+# for more details.
+IP_API_URL = "http://ip-api.com/batch?fields=23326714"
+
+# Split our list into batches of 100 IPs, and create the generator object
+list_of_batches = chunks(unique_ip_addresses, 100)
+
+
+for item in list_of_batches:
+    # We must preprocess our payload to format the IP address info
+    # in a format amenable to the API.
+    post_payload = str(item)
+    post_payload = post_payload.replace('\n', '')
+    post_payload = post_payload.replace("' '", "', '")
+    
+    # Replace all single quotes with double quotes.
+    post_payload = post_payload.replace("'", '"')
+
+    # Execute the API call with our payload of 100 IP addresses.
+    r = requests.post(IP_API_URL, data=post_payload)
+    
+    # Extract the results, which will be a list of dictionaries.
+    results_list = r.json()
+
+    # Append results for this chunk onto the fuller `reverse_lookup_list`.
+    reverse_lookup_list = reverse_lookup_list + results_list
+    
+    # Wait one minute before retrying the API.
+    sleep(65)
+```
+
+```{python}
+len(reverse_lookup_list)
+```
+
+We can sample a reverse lookup result. It is packed with more information than we could hope for, which will assist us into introspecting more deeply on our listening history. I will present the redacted output after the command.
+
+reverse_lookup_list[0]
+
+```{python}
+#| lang: json
+
+{'status': 'success',
+ 'continentCode': 'Narnia',
+ 'countryCode': 'Dothrakia',
+ 'regionName': 'Any State',
+ 'city': 'Any City',
+ 'zip': '#####',
+ 'lat': 00.0000,
+ 'lon': -000.0000,
+ 'timezone': 'America/Gotham',
+ 'isp': 'Random ISP, LLC',
+ 'org': 'Random ISP Corp',
+ 'as': 'Random ISP Enterprises, LLC',
+ 'asname': 'ISP-ON-BLAST',
+ 'mobile': True or False,
+ 'proxy': True or False,
+ 'hosting': True or False,
+ 'query': '000.000.000.000'}
+```
+
+We gathered extreme levels of detail on where streaming activity happened, what hosting service, geospatial data, and so on. Armed with an entire reverse lookup list, we can use this data to match the metadata to each IP address.
+
+```{python}
+# With a full list of reverse lookup info, we can generate a dict
+# using the IP addresses as keys, with the values being the 
+# reverse lookup data
+ip_host_info_dict = {}
+
+# We take the list of results and generate dictionary data.
+for item in reverse_lookup_list:
+    # Store the dictionary with key being IP address
+    ip_host_info_dict[item['query']] = item
+```
+
+```{python}
+# Sample the output of looking for one IP address
+ip_host_info_dict['000.000.000.000']
+```
+
+```{python}
+# Store this data temporarily locally. This is to avoid having to reacquire 
+# this if we need to restart notebook session. 
+%store ip_host_info_dict
+```
+
+We can then process our dictionary to insert this metadata into the `ip_metadata` table programmatically. Since we have results stored on a list, we need to be cautious, as simply copying the list will copy by reference, not by value. We import `copy` and execute a deepcopy of the original list containing reverse lookup information. We then rename some of the keys in the dictionary to match the accompanying database column, then sanity check a dictionary item.
+
+```{python}
+import copy 
+
+ip_metadata_clean = copy.deepcopy(reverse_lookup_list)
+
+# Rename specific keys in each dictionary
+for entry in ip_metadata_clean:
+    if 'query' in entry:
+        entry['ip_addr'] = entry.pop('query')
+    if 'as' in entry:
+        entry['asn'] = entry.pop('as')
+    if 'countryCode' in entry:
+        entry['country_code'] = entry.pop('countryCode')
+    if 'regionName' in entry:
+        entry['region_name'] = entry.pop('regionName')
+    if 'continentCode' in entry:
+        entry['continent_code'] = entry.pop('continentCode')
+    # Delete the 'message' key, whether a value is present or not.
+    entry.pop('message', None)
+
+# Convert to DataFrame
+ip_metadata_df = pd.DataFrame(ip_metadata_clean)
+
+# Sanity check the dataframe
+ip_metadata_df.head()
+```
+
+This data is extremely exciting (and dangerous), as we have rich data on ISP, geographic data, even columns that clarify if we were using proxy servers or were on a mobile network. 
+
+We can take the `ip_metadata_df` dataframe and insert its content directly into the `ip_metadata` table, enabling us to join and filter with already existing database contents.
+
+```{python}
+# Insert dataFrame into our existing database table
+ip_metadata_df.to_sql('ip_metadata', con=engine, index=False, if_exists='append')
+```
+
+### PowerBI Visualization
+
+While placing analysis constraints focusing only on using SQL are fine, we can extract even greater insights at a more rapid pace by utilizing tools such as [Power BI](https://bit.ly/3UF0ygF). We have created and included a Power BI template file in `notebooks/Spotify_Streaming_PowerBI_Template.pbit`. Opening this Power BI template from within the Power BI application will prompt for credentials to access the local database storing Spotify listening data. Enter in the correct database name, username, and password as appropriate for your development environment.
+
+```{python}
+# Set image path
+pbit_image_path = os.getcwd() + "\\exports\\images\\PowerBI_Template_screenshot.png"
+
+# Path to image file (relative or absolute)
+display(Image(filename=pbit_image_path, width=1200, height=600))
+```
+
+Once complete, each page of the report should begin rendering content based on the machine's respective Spotify listening data.
+
+```{python}
+pbit_splash_path = os.getcwd() + "\\exports\\images\\PowerBI_Splash_screenshot.png"
+
+# Path to image file (relative or absolute)
+display(Image(filename=pbit_splash_path, width=800, height=600))
+```
 
